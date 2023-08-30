@@ -182,22 +182,25 @@ host.BrowserHost = class {
       const ds = new DecompressionStream('gzip');
       const blob = await response.blob();
       const stream = blob.stream().pipeThrough(ds)
-      
+
       const plainModel = await new Response(stream).json()
 
-      console.log(plainModel)
+      console.log('plainModel:', plainModel)
 
       const id = plainModel._id
-      // TODO
-      await this.require('./tf-proto')
-      await this.require('./onnx-proto')
+      const name = id.startsWith('./') ? id.substring(2) : id;
 
       await this.require(id)
-      const module = window[id.split('/').pop()]
+      const module = window[name]
 
-      // TODO
-      // module.proto = protobuf.get('tf');
-      module.proto = protobuf.get('onnx').onnx;
+      try {
+        // TODO require(`${id}-schema`)
+        await this.require(`${id}-proto`)
+        if (protobuf.get(name)) {
+          module.proto = protobuf.get(name)[name] || protobuf.get(name);
+        }
+      } catch (e) {
+      }
 
       const xtypes = new Map()
       xtypes.set('Int64', base.Int64)
@@ -267,7 +270,7 @@ host.BrowserHost = class {
             Object.assign(tensorType, res);
 
             const shape = res._shape;
-            const tensorShape = new module.TensorShape();
+            const tensorShape = new module.TensorShape(shape?._dimensions);
             Object.assign(tensorShape, shape);
 
             tensorType._shape = tensorShape;
