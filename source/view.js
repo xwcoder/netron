@@ -5353,6 +5353,7 @@ view.ModelFactoryService = class {
                         if (!model.identifier) {
                             model.identifier = context.identifier;
                         }
+                        model._id = id;
                         return model;
                     }
                 } catch (error) {

@@ -9,7 +9,7 @@ window.require = function(id, callback) {
     var name = id.startsWith('./') ? id.substring(2) : id;
     var value = window[name];
     if (callback) {
-        if (value && id !== 'browser') {
+        if (value && id !== 'browser-v2') {
             return callback(value);
         }
         window.module = { exports: {} };
@@ -52,7 +52,7 @@ window.require = function(id, callback) {
 window.preload = function(callback) {
     var modules = [
         [ 'view' ],
-        [ 'json', 'xml', 'protobuf', 'hdf5', 'grapher', 'browser' ],
+        [ 'json', 'xml', 'protobuf', 'hdf5', 'grapher', 'browser-v2' ],
         [ 'base', 'text', 'flatbuffers', 'flexbuffers', 'zip',  'tar', 'python', 'dagre' ]
     ];
     var next = function() {
