@@ -83,14 +83,14 @@ async function main() {
       performance.mark('save')
       await save(content, file, dir, out)
       performance.measure('save', 'save')
-      performance.measure('耗时', 'start-item')
+      performance.measure('time cost', 'start-item')
       await sleep()
     } catch (e) {
       console.error(`Fail: ${file}`, e)
     }
   }
 
-  performance.measure('总耗时', 'start')
+  performance.measure('total time cost', 'start')
 }
 
 module.exports = {
