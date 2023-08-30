@@ -68,6 +68,8 @@ async function main() {
 
   logger.log('model list:', files)
 
+  await fs.mkdir(out, { recursive: true })
+
   for (const file of files) {
     try {
       logger.log(`parsing: ${file}`)
