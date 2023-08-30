@@ -1,7 +1,9 @@
 const fs = require('node:fs/promises')
 const path = require('node:path')
 const { performance } = require('node:perf_hooks')
-const protobuf = require('./protobuf')
+
+global.protobuf = require('./protobuf');
+global.flatbuffers = require('./flatbuffers');
 
 const { parseArgs } = require('./node/parse-args')
 const { logger } = require('./node/logger')
@@ -10,9 +12,8 @@ const { filterFiles } = require('./node/filter-files')
 const { parse } = require('./node/parse')
 const { serialize } = require('./node/serialize')
 const { save } = require('./node/save')
-require('./node/perf')
 
-global.protobuf = protobuf
+require('./node/perf')
 
 const sleep = (time = 0) => new Promise((resolve) => setTimeout(resolve, time))
 
