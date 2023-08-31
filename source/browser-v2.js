@@ -174,6 +174,139 @@ host.BrowserHost = class {
         await telemetry();
         await capabilities();
     }
+    
+    async preset(id, target) {
+      const context = this;
+      this._context = context;
+
+      const presets = {
+        './bigdl': async () => {
+          await context.require('./bigdl-proto')
+          bigdl.proto = protobuf.get('bigdl').com.intel.analytics.bigdl.serialization;
+        },
+
+        './caffe': async () => {
+          await context.require('./caffe-proto');
+          caffe.proto = protobuf.get('caffe').caffe;
+        },
+
+        './caffe2': async () => {
+          await context.require('./caffe2-proto');
+          caffe2.proto = protobuf.get('caffe2').caffe2;
+        },
+
+        './cntk': async () => {
+          if (target === '') {
+            return context.require('./cntk-proto');
+          }
+        },
+
+        './coreml': async () => {
+          await context.require('./coreml-proto');
+          coreml.proto = protobuf.get('coreml').CoreML.Specification;
+        },
+
+        './dnn': async () => {
+          await context.require('./dnn-proto');
+          dnn.proto = protobuf.get('dnn').dnn;
+        },
+
+        './nnabla': async () => {
+          await context.require('./nnabla-proto');
+          nnabla.proto = protobuf.get('nnabla').nnabla;
+        },
+
+        './om': async () => {
+          await this._context.require('./om-proto');
+          om.proto = protobuf.get('om').ge.proto;
+        },
+
+        './onnx': async () => {
+          await this._context.require('./onnx-proto');
+          onnx.proto = protobuf.get('onnx').onnx;
+
+          await this._context.require('./onnx-schema');
+          onnx.schema = flatbuffers.get('ort').onnxruntime.fbs;
+        },
+
+        './paddle': async () => {
+          await context.require('./paddle-proto');
+          paddle.proto = protobuf.get('paddle').paddle.framework.proto;
+
+          await context.require('./paddle-schema');
+          paddle.schema = flatbuffers.get('paddlelite').paddle.lite.fbs.proto;
+        },
+
+        './sentencepiece': async () => {
+          await context.require('./sentencepiece-proto');
+          sentencepiece.proto = protobuf.get('sentencepiece').sentencepiece;
+        },
+
+        './tf': async () => {
+          await context.require('./tf-proto');
+          tf.proto = protobuf.get('tf');
+        },
+
+        './uff': async () => {
+          await context.require('./uff-proto');
+          uff.proto = protobuf.get('uff').uff;
+        },
+
+        './xmodel': async () => {
+          await context.require('./xmodel-proto');
+          xmodel.proto = protobuf.get('xmodel').serial_v2;
+        },
+
+        './armnn': async () => {
+          await context.require('./armnn-schema');
+          armnn.schema = flatbuffers.get('armnn').armnnSerializer;
+        },
+
+        './circle': async () => {
+          await context.require('./circle-schema');
+          circle.schema = flatbuffers.get('circle').circle;
+        },
+
+        './dlc': async () => {
+          await context.require('./dlc-schema');
+          dlc.schema = flatbuffers.get('dlc').dlc;
+        },
+
+        './megengine': async () => {
+          await context.require('./megengine-schema');
+          megengine.schema = flatbuffers.get('megengine').mgb.serialization.fbs;
+        },
+
+        './mnn': async () => {
+          await context.require('./mnn-schema');
+          mnn.schema = flatbuffers.get('mnn').MNN;
+        },
+
+        './mslite': async () => {
+          await context.require('./mslite-schema');
+          mslite.schema = flatbuffers.get('mslite').mindspore.schema;
+        },
+
+        './pytorch': async () => {
+          await this._context.require('./pytorch-schema');
+          pytorch.mobile = flatbuffers.get('torch').torch.jit.mobile;
+        },
+
+        './rknn': async () => {
+          await context.require('./rknn-schema');
+          rknn.schema = flatbuffers.get('rknn').rknn;
+        },
+
+        './tflite': async () => {
+          await context.require('./tflite-schema');
+          tflite.schema = flatbuffers.get('tflite').tflite;
+        },
+      }
+
+      if (presets[id]) {
+        return presets[id]()
+      }
+    }
 
     async start() {
       const url = new URLSearchParams(window.location.search).get('url')
@@ -194,14 +327,7 @@ host.BrowserHost = class {
       const module = window[name]
 
       try {
-        // TODO require(`${id}-schema`)
-        await this.require('./tflite-schema');
-        tflite.schema = flatbuffers.get('tflite').tflite;
-
-        await this.require(`${id}-proto`)
-        if (protobuf.get(name)) {
-          module.proto = protobuf.get(name)[name] || protobuf.get(name);
-        }
+        await this.preset(id, target)
       } catch (e) {
         console.error(e)
       }
