@@ -187,7 +187,7 @@ host.BrowserHost = class {
 
       console.log('plainModel:', plainModel)
 
-      const id = plainModel._id
+      const { id, target } = plainModel
       const name = id.startsWith('./') ? id.substring(2) : id;
 
       await this.require(id)
@@ -195,11 +195,15 @@ host.BrowserHost = class {
 
       try {
         // TODO require(`${id}-schema`)
+        await this.require('./tflite-schema');
+        tflite.schema = flatbuffers.get('tflite').tflite;
+
         await this.require(`${id}-proto`)
         if (protobuf.get(name)) {
           module.proto = protobuf.get(name)[name] || protobuf.get(name);
         }
       } catch (e) {
+        console.error(e)
       }
 
       const xtypes = new Map()
@@ -266,7 +270,7 @@ host.BrowserHost = class {
 
           // TensorType
           if (key === 'type' && Object.hasOwn(res, '_shape') && module.TensorType) {
-            const tensorType = new module.TensorType();
+            const tensorType = new module.TensorType(res);
             Object.assign(tensorType, res);
 
             const shape = res._shape;
