@@ -4,7 +4,7 @@ const logger = {}
 
 ;['log', 'info', 'error', 'warn', 'debug'].forEach((method) => {
   logger[method] = (...args) => {
-    console[method](`[${time()}]`, ...args)
+    console[method](`[${method}] [${time()}]`, ...args)
   }
 })
 
