@@ -42,9 +42,9 @@ class Context {
       const buffer = new Uint8Array(fileSize)
       let offset = 0
 
-      while (position < fileSize) {
-        const len = Math.min(chunkSize, fileSize - position)
-        fs.read(buffer, offset, len, null)
+      while (offset < fileSize) {
+        const len = Math.min(chunkSize, fileSize - offset)
+        await fd.read(buffer, offset, len, null)
         offset += len
       }
 
@@ -57,7 +57,7 @@ class Context {
     while (position < fileSize) {
       const len = Math.min(chunkSize, fileSize - position)
       const buffer = new Uint8Array(len)
-      fd.read(buffer, 0, len, null)
+      await fd.read(buffer, 0, len, null)
       chunks.push(buffer)
       position += len
     }
